@@ -75,7 +75,8 @@ Use Ignite CLI to scaffold the blockchain app and the voting module.
 To scaffold a new blockchain named voter:
 
 ```sh
-Ignite CLI scaffold chain github.com/cosmonaut/voter
+ignite scaffold chain voter
+
 ```
 
 A new directory named `voter` is created in your current directory.
@@ -96,20 +97,19 @@ To launch the app from the `voter` project directory:
 
 ```bash
 cd voter
-Ignite CLI chain serve
+ignite chain serve
 ```
 
 The following output is returned, along with any errors that might show up in your application. Two default users and their mnemonic pass phrases are created.
 
 ```bash
-Cosmos SDK's version is: Stargate v0.40.0 (or later)
+Cosmos SDK's version is: stargate - v0.45.5
 🛠️  Building proto...
 📦 Installing dependencies...
 🛠️  Building the blockchain...
 💿 Initializing the app...
-🙂 Created account "alice" with address "cosmos1yr3zdtx4n2zgg6068vgrff2lx6vnsntgk0ktpc" with mnemonic: "exercise apology brand accident fruit level magnet public minor candy deliver wet time sudden giggle believe banner pride number tooth space sand kitten pony"
-🙂 Created account "bob" with address "cosmos1yp86g946npjhjs0cwaydph4r5ld2re9yjxvcc9" with mnemonic: "purse surprise olive bullet point shoulder matter allow unknown donor general nerve song any erase enhance thrive famous where loan soul hero help verb"
-Genesis transaction written to "/Users/tobias/.voter/config/gentx/gentx-4fddef12cde41ecc42411ca52053ed3c3d348bd2.json"
+🙂 Created account "alice" with address "cosmos1uk3yp9f56qma6p3wdpydp3wesdugvhhhcxm9vv" with mnemonic: "utility typical venue  endorse fame item display enact range legend truly rather tuna common tree arch spot luggage album flight mix flock leave logic"
+🙂 Created account "bob" with address "cosmos1zz5wfqfsnrmf9elexc5kk2u56nkycpexcseket" with mnemonic: "paddle obtain badge team join teach faculty huge member private garage toe private burst summer pair sustain milk because master cover hub spend  surge"
 🌍 Tendermint node: http://0.0.0.0:26657
 🌍 Blockchain API: http://0.0.0.0:1317
 🌍 Token faucet: http://0.0.0.0:4500
@@ -122,7 +122,7 @@ The voting applications has two types of entities: polls and votes.
 A poll type has a `title` and a list of `options`.
 In a new terminal window, run the following command in the `voter` directory:
 ```bash
-Ignite scaffold list poll title options
+ignite scaffold list poll title options
 ```
 After the poll type is successfully created, you see:
 ```bash
@@ -135,16 +135,16 @@ While running your blockchain, change into the `vue` directory, install the depe
 ```bash
 cd vue
 npm install
-npm run serve
+npm run dev
 ```
-- Visit <http://localhost:8080>
+- Visit <http://localhost:3000>
 It takes a few minutes to rebuild the app, so give it a couple of seconds. If your `localhost:8080` is already in use, your app can be viewed on the next available port.
 ![Application screenshot](./2.png)
 ### Sign in as Alice
 On the front-end app, sign in as end user Alice. The mnemonic passphrases for Alice and Bob were printed in the console after you ran the `Ignite CLI chain serve` command.
 After you are signed in as Alice, you can import an existing wallet that was created with the app. The wallet in the voter app can handle multiple accounts, so give your wallet a descriptive name. Using a descriptive wallet name helps you recognize this wallet in future transactions. For this example, naming this wallet `voter` makes sense.
 1. Click **Access Wallet** and then click **Import existing wallet**.
-2. Enter the passphrase for Alice that was output to your console when you launched the voter app with the `Ignite CLI serve` command and click **Next**
+2. Enter the passphrase for Alice that was output to your console when you launched the voter app with the `ignite serve` command and click **Next**
 3. Name your wallet `voter` and enter a password.
 4. Click **Done**.
 Now you want to view the custom `poll` type you created earlier.
@@ -152,7 +152,7 @@ Now you want to view the custom `poll` type you created earlier.
 To view the newly created `poll` transaction type, click the **Custom Type** navigation point on the web browser front-end app.
 To see the workflow to create a poll, enter an example value for the title and poll options. A new object is created and displayed next to the new poll form. You have successfully created an object and stored it on the blockchain!
 This object, however, does not look and work exactly like a poll. You need to be able to add option fields and store them as an array. You want the option fields to display as interactive buttons.
-Take a look at some of the files modified by the `Ignite CLI scaffold list` command.
+Take a look at some of the files modified by the `ignite scaffold list` command.
 ## Modify the Protobuffer Types
 To have multiple options in the poll, you must change the value `string options` in the Protobuffer definitions.
 1. In the `proto/voter` directory, open the `poll.proto` file.
