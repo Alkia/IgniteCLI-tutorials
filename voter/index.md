@@ -420,7 +420,7 @@ For the front-end app, you can focus on the content of these directories:
 ## Add the Voter Module Component to the Front End
 1. Navigate to the `views` directory in `vue/src/views`.
 2. Create the file `vue/src/views/Voter.vue` that will contain our voting UI:
-    ```javascript
+```javascript
 <template>
 	<div>
 		<div class="container">
@@ -433,9 +433,7 @@ For the front-end app, you can focus on the content of these directories:
 		</div>
 	</div>
 </template>
-
-
-    ```
+```
 3. To import the component, add the import statements in the `<script>` tag after the template code. The `<script>` tag contains JavaScript code.
     ```javascript
 <script>
