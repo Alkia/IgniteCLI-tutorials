@@ -7,6 +7,8 @@ description: Create a blockchain poll application, add types and messages, and d
 
 This tutorial creates a blockchain poll application. It has been updated on September 1st 2022 to reflect the latest changes from Ignite CLI.
 
+**Important: This tuto needs a last correction on the UI part: the polls are not yet recorded properly on the blochain **
+
 ![Application screenshot](./Voter-web3.jpg)
 
 This tutorial builds understanding as it walks you through creating a blockchain app, adding and modifying types for a transaction, editing messages, and designing the front-end app.
@@ -842,8 +844,8 @@ When you create a poll and cast a vote, this is the resulting JSON:
   }
 }
 ```
-See the API and JSON output of your created poll endpoint at <http://localhost:1317/cosmonaut/voter/voter/poll>.
-To see the votes, go to the API endpoint at <http://localhost:1317/cosmonaut/voter/voter/vote>.
+See the API and JSON output of your created poll endpoint at <http://localhost:1317/voter/voter/poll>.
+To see the votes, go to the API endpoint at <http://localhost:1317/voter/voter/vote>.
 ```json
 {
   "Vote": [
@@ -860,10 +862,12 @@ To see the votes, go to the API endpoint at <http://localhost:1317/cosmonaut/vot
   }
 }
 ```
-The endpoint paths are defined by the cosmonaut that you used when bootstrapping the application with Ignite CLI, together with the module name. So, if your GitHub user name is `cosmonaut`, then you can find:
-- The poll endpoint at `http://localhost:1317/cosmonaut/voter/voter/poll`
-- The API endpoint at `http://localhost:1317/cosmonaut/voter/voter/vote`
-Looking into this data, you can see that the combination of `creator` and `pollID` is what you are looking for.
+
+The endpoint paths are defined by:
+http://localhost:1317/voter/voter/poll
+http://localhost:1317/voter/voter/vote
+
+
 ## Limit to One Vote per User
 Each account should be allowed to have only 1 vote per pollID.
 The logic for access to a certain transaction is in the `keeper` directory. For the votes transaction logic, open the `msg_server_vote.go` file at `x/voter/keeper/msg_server_vote.go`, and modify the `CreateVote` function to check if the account has already voted and to return an error when a subsequent vote is cast.
