@@ -445,6 +445,31 @@ For the front-end app, you can focus on the content of these directories:
     }
 </script>
 ```
+
+You need to route the call to the voter page to ../views/Voter.vue. To make this go to `vue/src/router/index.js` and modify this file like this:
+```javascript
+import { createRouter, createWebHistory } from 'vue-router'
+
+import Data from '../views/Data.vue'
+import Portfolio from '../views/Portfolio.vue'
+import Voter from '../views/Voter.vue'
+
+const routerHistory = createWebHistory()
+const routes = [
+  { path: '/', component: Portfolio },
+  { path: '/portfolio', component: Portfolio },
+  { path: '/data', component: Data },
+  { path: '/voter', component: Voter }
+]
+
+const router = createRouter({
+  history: routerHistory,
+  routes
+})
+
+export default router
+``` 
+
 Now you can start creating the PollForm and PollList components.
 ### Create the PollForm Component
 **Note:** Some of the following steps depend on one another. If you look at your front-end app before you have updated all of the components that depend on one another, the front-end app might not load. Don't worry if the front-end app doesn't load at this point, this expected behavior happens because you have not yet completed code updates for all of the dependencies. Just complete the steps. Everything should work fine after the tutorial is completed and the pieces are wired up correctly. {synopsis}
@@ -511,7 +536,8 @@ export default {
           title: this.title,
           options: this.options.map((o) => o.title),
         };
-        //await this.$store.dispatch("cosmonaut.voter.voter/sendMsgCreatePoll", {
+		// TO FIX BEFORE PUBLISHING - There may be a problem here (the transaction does not complete) 
+        // Old tuto for ref: await this.$store.dispatch("cosmonaut.voter.voter/sendMsgCreatePoll", {
         await this.$store.dispatch("voter.voter/sendMsgCreatePoll", {
           value,
           fee: [],
@@ -522,7 +548,7 @@ export default {
 </script>
 ```
 3. Refresh the page.
-4. Sign in as an app end user with a password.
+4. Sign in as a Web3 end user with KEPLR (need your KEPLR password).
 5. Create a new poll. It takes a few seconds to process the transaction.
 6. Now, visit <http://localhost:1317/#/Query/VoterVoterPollAll>. This endpoint is defined in `x/voter/client/rest/queryPoll.go`:
 ```json
@@ -794,30 +820,6 @@ body {
 }
 </style>
 ```
-
-You need to route the call to the voter page to ../views/Voter.vue. To make this go to `vue/src/router/index.js` and modify this file like this:
-```javascript
-import { createRouter, createWebHistory } from 'vue-router'
-
-import Data from '../views/Data.vue'
-import Portfolio from '../views/Portfolio.vue'
-import Voter from '../views/Voter.vue'
-
-const routerHistory = createWebHistory()
-const routes = [
-  { path: '/', component: Portfolio },
-  { path: '/portfolio', component: Portfolio },
-  { path: '/data', component: Data },
-  { path: '/voter', component: Voter }
-]
-
-const router = createRouter({
-  history: routerHistory,
-  routes
-})
-
-export default router
-``` 
 
 By now you should be able to see the same front-end app UI that you saw in the first screenshot. Try creating polls and casting votes. You might notice that it's possible to cast multiple votes for one poll. This activity is not what you want, so you can fix that behavior.
 ## Access the API
