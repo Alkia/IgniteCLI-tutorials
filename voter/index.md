@@ -68,7 +68,6 @@ Design the app so that you can:
 
 Use Ignite CLI to scaffold the blockchain app and the voting module.
 
-**Important** In the code examples throughout this tutorial, when you see `cosmonaut` be sure to substitute it with _cosmonaut_. You need to do this in some of the Vue and REST API examples later. The app end user in this tutorial is alice. {synopsis}
 
 ### Build the new blockchain
 
@@ -139,7 +138,7 @@ npm run dev
 ```
 - Visit <http://localhost:3000>
 It takes a few minutes to rebuild the app, so give it a couple of seconds. If your `localhost:3000` is already in use, your app can be viewed on the next available port.
-![Application screenshot](./2.png)
+
 ### Sign in as Alice
 On the front-end app, sign in as end user Alice. The mnemonic passphrases for Alice and Bob were printed in the console after you ran the `Ignite CLI chain serve` command.
 After you are signed in as Alice, you can import an existing wallet that was created with the app. The wallet in the voter app can handle multiple accounts, so give your wallet a descriptive name. Using a descriptive wallet name helps you recognize this wallet in future transactions. For this example, naming this wallet `voter` makes sense.
@@ -350,7 +349,7 @@ ignite chain serve --reset-once
 
 At that stage you can test the vote. Try: 
 ```sh
-voterd tx voter create-poll "Do you like this tuto?" "Yes absolutelly" "No" "no idea" --from alice
+voterd tx voter create-poll "How wonderful is Cosmos on a scale of 1(worst) to 4(best) ?" "1" "2" "3" "4" --from bob
 ```
 
 ![Application screenshot](./Voter-CLI.jpg)
@@ -397,17 +396,17 @@ Each time the app restarts, the app end users alice and bob receive new passphra
 You can even do better by forcing the mnemonics of bob and alice in your config.yml, like this:
 ```
 accounts:
-  - name: alkia
+  - name: alice
     coins: ["200000token", "200000000stake"]
 	mnemonic: address slogan history guitar fringe health coral dish exercise excite utility now thank mosquito soul vacuum doctor squeeze host never dinosaur afford tide tide
-  - name: alice
+  - name: bob
     coins: ["200000token", "2000000000stake"]
     mnemonic: satisfy dirt cold electric apart coin later recall enhance pizza dust way shop erosion innocent actor member double never budget rival congress person done
 ```
 
-For the sake of testing let's create another Poll from Bob this time:
+For the sake of testing, let's create another Poll from Bob this time:
 ```bash
-voterd tx voter create-poll "How wonderful is Cosmos on a scale of 1(worst) to 4(best) ?" "1" "2" "3" "4" --from bob
+voterd tx voter create-poll "Do you like this tuto?" "Yes absolutelly" "No" "I have no idea" --from alice
 ```
 Now that you have made all the required changes to the app, take a look at the client-side application.
 ## Front-end Application
@@ -420,102 +419,109 @@ For the front-end app, you can focus on the content of these directories:
 - `vue/src/store/generated/voter/voter.voter/index.js` has the generated transactions `MsgCreatePoll`, `MsgUpdatePoll`, `MsgDeletePoll` that use the [CosmJS](https://github.com/cosmwasm/cosmjs) library for handling wallets, creating, signing and broadcasting transactions and defines a Vuex store.
 ## Add the Voter Module Component to the Front End
 1. Navigate to the `views` directory in `vue/src/views`.
-2. Since you don't need the default form component, replace these two lines in `vue/src/views/Types.vue`:
+2. Create the file `vue/src/views/Voter.vue` that will contain our voting UI:
     ```javascript
-    <SpType modulePath="cosmonaut.voter.voter" moduleType="Vote"  />
-    <SpType modulePath="cosmonaut.voter.voter" moduleType="Poll"  />
-    ```
-    with two new components and the `Voter Module` title:
-    ```javascript
-    <h3>
-      Voter Module
-    </h3>
+<template>
+	<div>
+		<div class="container">
+			<!-- this line is used by starport scaffolding # 4 -->
+		<h2>
+		Voter Module
+		</h2>
 		<PollForm />
 		<PollList />
+		</div>
+	</div>
+</template>
+
+
     ```
 3. To import the component, add the import statements in the `<script>` tag after the template code. The `<script>` tag contains JavaScript code.
     ```javascript
-    <script>
-    import PollForm from "../components/PollForm";
-    import PollList from "../components/PollList";
+<script>
+    import PollForm from "../components/PollForm.vue";
+    import PollList from "../components/PollList.vue";
     export default {
       name: 'Types',
       components: { PollForm, PollList },
     }
-    </script>
+</script>
     ```
 Now you can start creating the PollForm and PollList components.
 ### Create the PollForm Component
 **Note:** Some of the following steps depend on one another. If you look at your front-end app before you have updated all of the components that depend on one another, the front-end app might not load. Don't worry if the front-end app doesn't load at this point, this expected behavior happens because you have not yet completed code updates for all of the dependencies. Just complete the steps. Everything should work fine after the tutorial is completed and the pieces are wired up correctly. {synopsis}
-1. For the PollForm, create a new file `PollForm.vue` in the `vue/src/components` directory.
-2. Add this code to give the PollForm component a title and two buttons:
+1. If needed create the the `vue/src/components` directory. 
+2. For the PollForm, create a new file `PollForm.vue` in the `vue/src/components` directory. Add this code to give the PollForm component a title and two buttons:
     ```vue
-    <template>
-      <div>
-        <div class="sp-voter__main sp-box sp-shadow sp-form-group">
-            <form class="sp-voter__main__form">
-              <div class="sp-voter__main__rcpt__header sp-box-header">
-                Create a Poll
-              </div>
-              <input class="sp-input" placeholder="Title" v-model="title" />
-              <div v-for="(option, index) in options" v-bind:key="'option' + index">
-                <input class="sp-input" placeholder="Option" v-model="option.title" />
-              </div>
-              <sp-button @click="add">+ Add option</sp-button>
-              <sp-button @click="submit">Create poll</sp-button>
-            </form>
-        </div>
+<template>
+    <div>
+      <div class="sp-voter__main sp-box sp-shadow sp-form-group">
+          <form class="sp-voter__main__form">
+            <div class="sp-voter__main__rcpt__header sp-box-header">
+              Create a Poll
+            </div>
+
+            <input class="sp-input" placeholder="Title" v-model="title" />
+            <div v-for="(option, index) in options" v-bind:key="'option' + index">
+              <input class="sp-input" placeholder="Option" v-model="option.title" />
+            </div>
+            <sp-button @click="add">+ Add option</sp-button>
+            <sp-button @click="submit">Create poll</sp-button>
+          </form>
       </div>
-    </template>
-    <script>
-    export default {
-      name: "PollForm",
-      data() {
-        return {
+    </div>
+</template>
+
+<script>
+export default {
+    name: "PollForm",
+    data() {
+      return {
+        title: "",
+        options: [{
           title: "",
-          options: [{
-            title: "",
-          }],
-        };
-      },
-      computed: {
-        currentAccount() {
-          if (this._depsLoaded) {
-            if (this.loggedIn) {
-              return this.$store.getters['common/wallet/address']
-            } else {
-              return null
-            }
+        }],
+      };
+    },
+    computed: {
+      currentAccount() {
+        if (this._depsLoaded) {
+          if (this.loggedIn) {
+            return this.$store.getters['common/wallet/address']
           } else {
             return null
           }
-        },
-        loggedIn() {
-          if (this._depsLoaded) {
-            return this.$store.getters['common/wallet/loggedIn']
-          } else {
-            return false
-          }
+        } else {
+          return null
         }
       },
-      methods: {
-        add() {
-          this.options = [...this.options, { title: "" }];
-        },
-        async submit() {
-          const value = {
-            creator: this.currentAccount,
-            title: this.title,
-            options: this.options.map((o) => o.title),
-          };
-          await this.$store.dispatch("cosmonaut.voter.voter/sendMsgCreatePoll", {
-            value,
-            fee: [],
-          });
-        },
+      loggedIn() {
+        if (this._depsLoaded) {
+          return this.$store.getters['common/wallet/loggedIn']
+        } else {
+          return false
+        }
+      }
+    },
+    methods: {
+      add() {
+        this.options = [...this.options, { title: "" }];
       },
-    };
-    </script>
+      async submit() {
+        const value = {
+          creator: this.currentAccount,
+          title: this.title,
+          options: this.options.map((o) => o.title),
+        };
+        //await this.$store.dispatch("cosmonaut.voter.voter/sendMsgCreatePoll", {
+        await this.$store.dispatch("voter.voter/sendMsgCreatePoll", {
+          value,
+          fee: [],
+        });
+      },
+    },
+  };
+</script>
     ```
 3. Refresh the page.
 4. Sign in as an app end user with a password.
@@ -538,92 +544,97 @@ Now you can start creating the PollForm and PollList components.
 ### Create the Poll List Component
 1. Create a new `PollList.vue` file for the component in `vue/src/components/`.
     ```javascript
-    <template>
-      <div>
-        <h2> List of Polls </h2>
-        <div v-for="poll in polls" v-bind:key="'poll' + poll.id">
-          <b> {{poll.id}}. {{ poll.title }} </b>
-          <AppRadioItem
-            @click="submit(poll.id, option)"
-            v-for="option in poll.options"
-            v-bind:key="option"
-            :value="option"
-          />
-          <AppText type="subtitle">Results: {{ results(poll.id) }}</AppText>
-        </div>
-      </div>
-    </template>
-    <style>
-    .option-radio > .button {
-      height: 40px;
-      width: 50%;
-    }
-    </style>
-    <script>
-    import AppRadioItem from "./AppRadioItem";
-    import AppText from "./AppText";
-    import { countBy } from "lodash";
-    export default {
-      components: { AppText, AppRadioItem },
-      data() {
-        return {
-          selected: "",
-        };
-      },
-      computed: {
-        currentAccount() {
-          if (this._depsLoaded) {
-            if (this.loggedIn) {
-              return this.$store.getters['common/wallet/address']
-            } else {
-              return null
-            }
-          } else {
-            return null
-          }
-        },
-        loggedIn() {
-          if (this._depsLoaded) {
-            return this.$store.getters['common/wallet/loggedIn']
-          } else {
-            return false
-          }
-        },
-        polls() {
-          return (
-            this.$store.getters["cosmonaut.voter.voter/getPollAll"]({
-              params: {}
-            })?.Poll ?? []
-          );
-        },
-        votes() {
-          return (
-            this.$store.getters["cosmonaut.voter.voter/getVoteAll"]({
-              params: {}
-            })?.Vote ?? []
-          );
-        },
-      },
-      methods: {
-        results(id) {
-          const results = this.votes.filter((v) => v.pollID === id);
-          return countBy(results, "option");
-        },
-        async submit(pollID, option) {
-          
-          const value = { creator: this.currentAccount, pollID, option };
-          await this.$store.dispatch("cosmonaut.voter.voter/sendMsgCreateVote", {
-            value,
-            fee: [],
-          });
-          await this.$store.dispatch("cosmonaut.voter.voter/QueryPollAll", {
-            options: { subscribe: true, all: true },
-            params: {},
-          });
-        },
-      },
+ <template>
+    <div>
+    <h3> List of Polls </h3>
+    <div v-for="poll in polls" v-bind:key="'poll' + poll.id">
+        <h4> {{poll.id}}. {{ poll.title }} </h4>
+        <AppRadioItem
+        @click="submit(poll.id, option)"
+        v-for="option in poll.options"
+        v-bind:key="option"
+        :value="option"
+        />
+        <AppText type="subtitle">Results: {{ results(poll.id) }}</AppText>
+    </div>
+    </div>
+</template>
+<style>
+.option-radio > .button {
+    height: 40px;
+    width: 50%;
+}
+</style>
+
+<script>
+import AppRadioItem from "./AppRadioItem.vue";
+import AppText from "./AppText.vue";
+import { countBy } from "lodash";
+export default {
+    components: { AppText, AppRadioItem },
+    data() {
+    return {
+        selected: "",
     };
-    </script>
+    },
+    computed: {
+    currentAccount() {
+        if (this._depsLoaded) {
+        if (this.loggedIn) {
+            return this.$store.getters['common/wallet/address']
+        } else {
+            return null
+        }
+        } else {
+        return null
+        }
+    },
+    loggedIn() {
+        if (this._depsLoaded) {
+        return this.$store.getters['common/wallet/loggedIn']
+        } else {
+        return false
+        }
+    },
+    polls() {
+        return (
+       // this.$store.getters["cosmonaut.voter.voter/getPollAll"]({
+        this.$store.getters["voter.voter/getPollAll"]({
+            params: {}
+        })?.Poll ?? []
+        );
+    },
+    votes() {
+        return (
+        //this.$store.getters["cosmonaut.voter.voter/getVoteAll"]({    
+        this.$store.getters["voter.voter/getVoteAll"]({
+            params: {}
+        })?.Vote ?? []
+        );
+    },
+    },
+    methods: {
+    results(id) {
+        const results = this.votes.filter((v) => v.pollID === id);
+        return countBy(results, "option");
+    },
+    async submit(pollID, option) {
+        
+        const value = { creator: this.currentAccount, pollID, option };
+        //await this.$store.dispatch("cosmonaut.voter.voter/sendMsgCreateVote", {
+        await this.$store.dispatch("voter.voter/sendMsgCreateVote", {
+        value,
+        fee: [],
+        });
+        //await this.$store.dispatch("cosmonaut.voter.voter/QueryPollAll", {
+        await this.$store.dispatch("voter.voter/QueryPollAll", {
+        options: { subscribe: true, all: true },
+        params: {},
+        });
+    },
+    },
+};
+</script>
     ```
 The `PollList` component you just created lists every poll, including the options for that poll as buttons. Selecting an option triggers a `submit` method that broadcasts a transaction with a create vote message and fetches data back from your application.
 Two components are still missing from your app to make look more like a voting poll. Now you can add the `AppRadioItem.vue` and `AppText.vue` UI options.
@@ -719,37 +730,97 @@ export default {
 Now, update the JavaScript in `vue/src/App.vue` to fetch the votes.
 The `App.vue` file handles the transactions of the components. Modify the code in the `<script>` tag to look like:
 ```javascript
-<script>
-import './scss/app.scss'
-import '@Ignite CLI/vue/lib/Ignite CLI-vue.css'
-import Sidebar from './components/Sidebar'
+<template>
+  <div>
+    <SpTheme>
+      <SpNavbar
+        :links="navbarLinks"
+        :active-route="router.currentRoute.value.path"
+      />
+      <router-view />
+    </SpTheme>
+  </div>
+</template>
+
+<script lang="ts">
+import { SpNavbar, SpTheme } from '@starport/vue'
+import { computed, onBeforeMount } from 'vue'
+import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
+
 export default {
-    components: {
-        Sidebar
-    },
-    data() {
-        return {
-            initialized: false
-        }
-    },
-    computed: {
-        hasWallet() {
-            return this.$store.hasModule([ 'common', 'wallet'])
-        }
-    },
-    async created() {
-        await this.$store.dispatch('common/env/init')
-        this.initialized = true
-        await this.$store.dispatch("cosmonaut.voter.voter/QueryPollAll",{options:{subscribe:true, all:true},params:{}})
-        await this.$store.dispatch("cosmonaut.voter.voter/QueryVoteAll",{options:{subscribe:true, all:true},params:{}})
-    },
-    errorCaptured(err) {
-        console.log(err)
-        return false
+  components: { SpTheme, SpNavbar },
+
+  setup() {
+    // store
+    let $s = useStore()
+
+    // router
+    let router = useRouter()
+
+    // state
+    let navbarLinks = [
+      { name: 'Portfolio', url: '/portfolio' },
+      { name: 'Data', url: '/data' },
+      { name: 'Voter', url: '/voter' }
+    ]
+
+    // computed
+    let address = computed(() => $s.getters['common/wallet/address'])
+
+    // lh
+    onBeforeMount(async () => {
+      await $s.dispatch('common/env/init')
+
+      await $s.dispatch("voter.voter/QueryPollAll",{options:{subscribe:true, all:true},params:{}})
+      await $s.dispatch("voter.voter/QueryVoteAll",{options:{subscribe:true, all:true},params:{}})
+
+      router.push('portfolio')
+      //router.push('vote')
+    })
+
+    return {
+      navbarLinks,
+      // router
+      router,
+      // computed
+      address
     }
+  }
 }
 </script>
+
+<style scoped lang="scss">
+body {
+  margin: 0;
+}
+</style>
 ```
+
+You need to route the call to the voter page to ../views/Voter.vue. To make this go to `vue/src/router/index.js` and modify this file like this:
+```javascript
+import { createRouter, createWebHistory } from 'vue-router'
+
+import Data from '../views/Data.vue'
+import Portfolio from '../views/Portfolio.vue'
+import Voter from '../views/Voter.vue'
+
+const routerHistory = createWebHistory()
+const routes = [
+  { path: '/', component: Portfolio },
+  { path: '/portfolio', component: Portfolio },
+  { path: '/data', component: Data },
+  { path: '/voter', component: Voter }
+]
+
+const router = createRouter({
+  history: routerHistory,
+  routes
+})
+
+export default router
+``` 
+
 By now you should be able to see the same front-end app UI that you saw in the first screenshot. Try creating polls and casting votes. You might notice that it's possible to cast multiple votes for one poll. This activity is not what you want, so you can fix that behavior.
 ## Access the API
 To fix this issue, you first have to understand how data is stored in your application.
