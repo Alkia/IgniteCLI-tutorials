@@ -450,7 +450,7 @@ Now you can start creating the PollForm and PollList components.
 **Note:** Some of the following steps depend on one another. If you look at your front-end app before you have updated all of the components that depend on one another, the front-end app might not load. Don't worry if the front-end app doesn't load at this point, this expected behavior happens because you have not yet completed code updates for all of the dependencies. Just complete the steps. Everything should work fine after the tutorial is completed and the pieces are wired up correctly. {synopsis}
 1. If needed create the the `vue/src/components` directory. 
 2. For the PollForm, create a new file `PollForm.vue` in the `vue/src/components` directory. Add this code to give the PollForm component a title and two buttons:
-    ```vue
+```vue
 <template>
     <div>
       <div class="sp-voter__main sp-box sp-shadow sp-form-group">
@@ -520,12 +520,12 @@ export default {
     },
   };
 </script>
-    ```
+```
 3. Refresh the page.
 4. Sign in as an app end user with a password.
 5. Create a new poll. It takes a few seconds to process the transaction.
 6. Now, visit <http://localhost:1317/#/Query/VoterVoterPollAll>. This endpoint is defined in `x/voter/client/rest/queryPoll.go`:
-    ```json
+```json
 	"Poll": [
     {
       "id": "0",
@@ -538,10 +538,10 @@ export default {
       "creator": "cosmos16n5tnkck6rcg7gxmalc057daputvac5p7lheyx"
     }
   ],
-    ```
+```
 ### Create the Poll List Component
 1. Create a new `PollList.vue` file for the component in `vue/src/components/`.
-    ```javascript
+```javascript
  <template>
     <div>
     <h3> List of Polls </h3>
@@ -633,7 +633,7 @@ export default {
     },
 };
 </script>
-    ```
+```
 The `PollList` component you just created lists every poll, including the options for that poll as buttons. Selecting an option triggers a `submit` method that broadcasts a transaction with a create vote message and fetches data back from your application.
 Two components are still missing from your app to make look more like a voting poll. Now you can add the `AppRadioItem.vue` and `AppText.vue` UI options.
 ### Add the Options Component
