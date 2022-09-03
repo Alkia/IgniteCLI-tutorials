@@ -7,7 +7,7 @@ description: Create a blockchain poll application, add types and messages, and d
 
 This tutorial creates a blockchain poll application. It has been updated on September 1st 2022 to reflect the latest changes from Ignite CLI.
 
-![Application screenshot](./1.png)
+![Application screenshot](./Voter-web3.jpg)
 
 This tutorial builds understanding as it walks you through creating a blockchain app, adding and modifying types for a transaction, editing messages, and designing the front-end app.
 
@@ -352,6 +352,9 @@ At that stage you can test the vote. Try:
 ```sh
 voterd tx voter create-poll "Do you like this tuto?" "Yes absolutelly" "No" "no idea" --from alice
 ```
+
+![Application screenshot](./Voter-CLI.jpg)
+
 You can check with the API that the poll is registered (we did not emplemented the list in the CLI):
 Go to http://localhost:1317/#/Query/VoterVoterPollAll
 Clic on "try it out" button and then "execute" button, the response body shall show:
