@@ -435,7 +435,7 @@ For the front-end app, you can focus on the content of these directories:
 </template>
 ```
 3. To import the component, add the import statements in the `<script>` tag after the template code. The `<script>` tag contains JavaScript code.
-    ```javascript
+```javascript
 <script>
     import PollForm from "../components/PollForm.vue";
     import PollList from "../components/PollList.vue";
@@ -444,7 +444,7 @@ For the front-end app, you can focus on the content of these directories:
       components: { PollForm, PollList },
     }
 </script>
-    ```
+```
 Now you can start creating the PollForm and PollList components.
 ### Create the PollForm Component
 **Note:** Some of the following steps depend on one another. If you look at your front-end app before you have updated all of the components that depend on one another, the front-end app might not load. Don't worry if the front-end app doesn't load at this point, this expected behavior happens because you have not yet completed code updates for all of the dependencies. Just complete the steps. Everything should work fine after the tutorial is completed and the pieces are wired up correctly. {synopsis}
