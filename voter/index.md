@@ -138,7 +138,7 @@ npm install
 npm run dev
 ```
 - Visit <http://localhost:3000>
-It takes a few minutes to rebuild the app, so give it a couple of seconds. If your `localhost:8080` is already in use, your app can be viewed on the next available port.
+It takes a few minutes to rebuild the app, so give it a couple of seconds. If your `localhost:3000` is already in use, your app can be viewed on the next available port.
 ![Application screenshot](./2.png)
 ### Sign in as Alice
 On the front-end app, sign in as end user Alice. The mnemonic passphrases for Alice and Bob were printed in the console after you ran the `Ignite CLI chain serve` command.
@@ -347,6 +347,35 @@ Run and reset the app state of your blockchain with:
 ```sh
 ignite chain serve --reset-once
 ```
+
+At that stage you can test the vote. Try: 
+```sh
+voterd tx voter create-poll "Do you like this tuto?" "Yes absolutelly" "No" "no idea" --from alice
+```
+You can check with the API that the poll is registered (we did not emplemented the list in the CLI):
+Go to http://localhost:1317/#/Query/VoterVoterPollAll
+Clic on "try it out" button and then "execute" button, the response body shall show:
+```json
+{
+  "Poll": [
+    {
+      "id": "0",
+      "title": "Do you like this tuto?",
+      "options": [
+        "Yes absolutelly",
+        "No",
+        "no idea"
+      ],
+      "creator": "cosmos16n5tnkck6rcg7gxmalc057daputvac5p7lheyx"
+    }
+  ],
+  "pagination": {
+    "next_key": null,
+    "total": "1"
+  }
+}
+```
+
 ## Add the Votes
 At this point, you have created a blockchain that lets app end users create polls. Now it's time to enable the app end users to cast votes on an existing poll.
 To create the vote type:
@@ -361,7 +390,22 @@ Now, restart the application. Remember to use the `--reset-once` flag to recogni
 ignite chain serve --reset-once
 ```
 Each time you reset the application state, all of the data from your previously created state is not saved.
-Each time the app restarts, the app end users alice and bob receive new passphrases and new tokens. Make sure to update the wallet accounts in the front-end app after you reset the state of the blockchain. {synopsis}
+Each time the app restarts, the app end users alice and bob receive new passphrases and new tokens. Make sure to update the wallet accounts in the front-end app after you reset the state of the blockchain.
+You can even do better by forcing the mnemonics of bob and alice in your config.yml, like this:
+```
+accounts:
+  - name: alkia
+    coins: ["200000token", "200000000stake"]
+	mnemonic: address slogan history guitar fringe health coral dish exercise excite utility now thank mosquito soul vacuum doctor squeeze host never dinosaur afford tide tide
+  - name: alice
+    coins: ["200000token", "2000000000stake"]
+    mnemonic: satisfy dirt cold electric apart coin later recall enhance pizza dust way shop erosion innocent actor member double never budget rival congress person done
+```
+
+For the sake of testing let's create another Poll from Bob this time:
+```bash
+voterd tx voter create-poll "How wonderful is Cosmos on a scale of 1(worst) to 4(best) ?" "1" "2" "3" "4" --from bob
+```
 Now that you have made all the required changes to the app, take a look at the client-side application.
 ## Front-end Application
 Ignite CLI automatically generated a basic front end for the app. For convenience, [Vue.js](https://vuejs.org) framework is used with [Vuex](https://vuex.vuejs.org/) for state management. Because all features of the app are exposed through an HTTP API, you can build clients using any language or framework.
@@ -369,8 +413,8 @@ For the front-end app, you can focus on the content of these directories:
 - `vue/src/views`
   These directories contain the code for the page templates of your app.
 - `vue/src/store/`
-  Handles sending transactions and receiving data from your blockchain and the [`@tendermint/vue`](https://github.com/tendermint/vue/)directory that contains UI components, like buttons and forms. This directory contains the generated protobuffer file definitions that were defined in the `vue/src/store/generated/cosmonaut/voter/cosmonaut.voter.voter` directory.
-- `vue/src/store/generated/cosmonaut/voter/cosmonaut.voter.voter/index.js` has the generated transactions `MsgCreatePoll`, `MsgUpdatePoll`, `MsgDeletePoll` that use the [CosmJS](https://github.com/cosmwasm/cosmjs) library for handling wallets, creating, signing and broadcasting transactions and defines a Vuex store.
+  Handles sending transactions and receiving data from your blockchain and the [`@tendermint/vue`](https://github.com/tendermint/vue/)directory that contains UI components, like buttons and forms. This directory contains the generated protobuffer file definitions that were defined in the `vue/src/store/generated/voter/voter.voter` directory.
+- `vue/src/store/generated/voter/voter.voter/index.js` has the generated transactions `MsgCreatePoll`, `MsgUpdatePoll`, `MsgDeletePoll` that use the [CosmJS](https://github.com/cosmwasm/cosmjs) library for handling wallets, creating, signing and broadcasting transactions and defines a Vuex store.
 ## Add the Voter Module Component to the Front End
 1. Navigate to the `views` directory in `vue/src/views`.
 2. Since you don't need the default form component, replace these two lines in `vue/src/views/Types.vue`:
@@ -473,19 +517,20 @@ Now you can start creating the PollForm and PollList components.
 3. Refresh the page.
 4. Sign in as an app end user with a password.
 5. Create a new poll. It takes a few seconds to process the transaction.
-6. Now, visit <http://localhost:1317/voter/poll>. This endpoint is defined in `x/voter/client/rest/queryPoll.go`:
+6. Now, visit <http://localhost:1317/#/Query/VoterVoterPollAll>. This endpoint is defined in `x/voter/client/rest/queryPoll.go`:
     ```json
+	"Poll": [
     {
-      "height": "0",
-      "result": [
-        {
-          "creator": "cosmos19qqa7j73735w4pcx9mkkaxr00af7p432n62tv6",
-          "id": "826477ab-0005-4e68-8031-19758d331681",
-          "title": "A poll title",
-          "options": ["First option", "The second option"]
-        }
-      ]
+      "id": "0",
+      "title": "Do you like this tuto?",
+      "options": [
+        "Yes absolutelly",
+        "No",
+        "No idea"
+      ],
+      "creator": "cosmos16n5tnkck6rcg7gxmalc057daputvac5p7lheyx"
     }
+  ],
     ```
 ### Create the Poll List Component
 1. Create a new `PollList.vue` file for the component in `vue/src/components/`.
