@@ -250,7 +250,7 @@ func CmdUpdatePoll() *cobra.Command {
 To write anything to a blockchain or perform any other state transition, a client makes an HTTP POST request. In our case, the voter web app is the client.
 The handler creates an unsigned transaction that contains an array of messages. The client then signs the transaction and sends it to <http://localhost:1317/txs>. The application processes the transaction by sending each message to a corresponding handler, in our case `x/voter/handler.go`.
 A handler then calls a `CreatePoll` function that is defined in `x/voter/keeper/poll.go` that writes the poll data into the store.
-### [full paragraph to be deleted] Modify the CLI Transaction
+### [full paragraph to be deleted | BEGIN] Modify the CLI Transaction
 A poll app end user can also interact with your application by using a command line interface.
 The CLI definition is available at `x/voter/client/cli/tx_poll.go`.
 For example:
@@ -344,6 +344,9 @@ func CmdUpdatePoll() *cobra.Command {
 	return cmd
 }
 ```
+[END | full paragraph to be deleted]
+
+
 Run and reset the app state of your blockchain with:
 ```sh
 ignite chain serve --reset-once
